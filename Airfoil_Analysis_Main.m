@@ -61,6 +61,7 @@ Data15 = zeros(numFiles,25); %Conditioned wind tunnel data file 15 m/s
    % Average Test Section Static Pressure (done by student code)
    % Average Airfoil Port Local Velocity (done by student code)
    % Average Airfoil Port Local Static Pressure (done by student code)
+
 for j = 1:numFiles
    RawData15 = readmatrix(fileNames15(j),'NumHeaderLines',1); % load the data
    %Condition data
@@ -248,7 +249,8 @@ end
 
 
 
-
+%Loading in Y14 NACA data
+NACA = readmatrix("ClarkY14_NACA_TR628.xlsx");
 
 
 
@@ -330,4 +332,8 @@ hold off
 % Coefficient of Lift vs Angle of Attack
 subplot(3,3,7:9);
 plot(Calculated_Values(:,1) , Calculated_Values(:,5));
+hold on
+plot(NACA(1:7,1) , NACA(1:7,2));
+legend('Student Cl','NACA Cl')
 title('AoA vs Coefficient of Lift');
+
