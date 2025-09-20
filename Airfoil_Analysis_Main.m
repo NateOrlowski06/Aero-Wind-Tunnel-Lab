@@ -189,6 +189,10 @@ end
 % Calculation for Velocity at each port
 VelUpper = zeros(9, 31);
 VelLower = zeros(8, 31);
+CpUpper = zeros(9,31);
+CpLower = zeros(8,31);
+
+
 
 
 %Calculates x/c for each point along upper surface
@@ -196,6 +200,7 @@ for i = 1:9
    x_pos = Ports(i, 2);
    nChord = x_pos / ChordLength;
    VelUpper(i, 1) = nChord;
+   CpUpper(i,1) = nChord;
 end
 %Calculates x/c for each point along lower surface
 for i = 1:8
@@ -203,7 +208,9 @@ for i = 1:8
    x_pos = Ports(index, 2);
    nChord = x_pos / ChordLength;
    VelLower(i, 1) = nChord;
+   CpLower(i,1) = nChord;
 end
+
 
 %Loops over every AoA
 for i = 1:30
@@ -211,20 +218,41 @@ for i = 1:30
    %Loops from leading edge to last port on upper surface
    for j = 1:9
        index = j + 7;
+
+       %Velocity calculation at each port
        Velocity = sqrt((2 * (abs(Data15(i, index))) / Data15(i, 5)));
        VelUpper(j, i+1) = Velocity;
+
+       %Coefficient of pressure calculation at each port
+       CpUpper(j,i+1) = Data15(i,index) / Data15(i,6);
    end
 
    %Loops from leading edge to last port on lower surface
    for j = 18:-1:11
        index = j + 7;
+
+       %Velocity calculation at each port
        Velocity = sqrt((2 * (abs(Data15(i, index))) / Data15(i, 5)));
        VelLower(19 - j, i+1) = Velocity;
+
+       %Coefficient of pressure calculation at each port
+       CpLower(19-j,i+1) = Data15(i,index) / Data15(i,6);
+  
    end
 end
 
 
 [MinCoefficient, ZeroLiftIndex] = min(abs(Calculated_Values(: , 5)));
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -238,7 +266,7 @@ hold on
 plot(VelLower(1:8, 1), VelLower(1:8, 22), 'b')
 legend('Upper Velocity', 'Lower Velocity')
 title('Velocity vs Normalized Chord')
-subtitle('6 Degree AoA')
+subtitle('6 Degree AoA 15 m/s')
 hold off
 
 % 0 Lift
@@ -248,7 +276,7 @@ hold on
 plot(VelLower(1:8, 1), VelLower(1:8, ZeroLiftIndex + 1), 'b')
 legend('Upper Velocity', 'Lower Velocity')
 title('Velocity vs Normalized Chord')
-subtitle('Zero Lift')
+subtitle('Zero Lift 15 m/s')
 
 hold off
 
@@ -259,7 +287,7 @@ hold on
 plot(VelLower(1:8, 1), VelLower(1:8, 26), 'b')
 legend('Upper Velocity', 'Lower Velocity')
 title('Velocity vs Normalized Chord')
-subtitle('Stall Angle')
+subtitle('Stall Angle 15 m/s')
 hold off
 
 
@@ -267,20 +295,39 @@ hold off
 
 
 % Coefficient of Pressure vs normalized chord (x/c)
+%6 degrees 
 subplot(3,3,4);
+plot(CpUpper(1:9, 1), CpUpper(1:9, 22), 'r')
+hold on
+plot(CpLower(1:8, 1), CpLower(1:8, 22), 'b')
+legend('Upper Cp', 'Lower Cp')
+title('Coefficient of Pressure vs Normalized Chord')
+subtitle('6 Degree AoA 15 m/s')
+hold off
 
+%Zero lift
 subplot(3,3,5);
+plot(CpUpper(1:9, 1), CpUpper(1:9, ZeroLiftIndex + 1), 'r')
+hold on
+plot(CpLower(1:8, 1), CpLower(1:8, ZeroLiftIndex + 1), 'b')
+legend('Upper Cp', 'Lower Cp')
+title('Coefficient of Pressure vs Normalized Chord')
+subtitle('Zero Lift 15 m/s')
 
+%Stall
 subplot(3,3,6);
-
-
-
-
+plot(CpUpper(1:9, 1), CpUpper(1:9, 26), 'r')
+hold on
+plot(CpLower(1:8, 1), CpLower(1:8, 26), 'b')
+legend('Upper Cp', 'Lower Cp')
+title('Coefficient of Pressure vs Normalized Chord')
+subtitle('Stall Angle 15 m/s')
+hold off
 
 
 
 
 % Coefficient of Lift vs Angle of Attack
-subplot(3,3,4);
+subplot(3,3,7:9);
 plot(Calculated_Values(:,1) , Calculated_Values(:,5));
 title('AoA vs Coefficient of Lift');
